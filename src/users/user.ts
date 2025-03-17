@@ -7,6 +7,10 @@ export type SendMessageBody = {
   destinationUserId: number;
 };
 
+export type MessageBody = {
+  message: string;
+};
+
 let lastReceivedMessage: string | null = null;
 let lastSentMessage: string | null = null;
 
@@ -27,6 +31,13 @@ export async function user(userId: number) {
   // Implement the getLastSentMessage route
   _user.get("/getLastSentMessage", (req, res) => {
     res.status(200).json({ result: lastSentMessage });
+  });
+
+  // Implement the message route
+  _user.post("/message", (req, res) => {
+    const { message } = req.body as MessageBody;
+    lastReceivedMessage = message;
+    res.status(200).send("Message received");
   });
 
   const server = _user.listen(BASE_USER_PORT + userId, () => {

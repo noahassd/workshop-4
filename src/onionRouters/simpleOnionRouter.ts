@@ -1,15 +1,32 @@
 import bodyParser from "body-parser";
 import express from "express";
-import { BASE_ONION_ROUTER_PORT } from "../config";
+import axios from "axios";
+import { BASE_ONION_ROUTER_PORT, REGISTRY_PORT } from "../config";
 
 let lastReceivedEncryptedMessage: string | null = null;
 let lastReceivedDecryptedMessage: string | null = null;
 let lastMessageDestination: number | null = null;
 
+async function generateKeyPair() {
+  // Placeholder for key generation logic
+  return {
+    publicKey: "publicKeyString",
+    privateKey: "privateKeyString",
+  };
+}
+
 export async function simpleOnionRouter(nodeId: number) {
+  const { publicKey, privateKey } = await generateKeyPair();
+
   const onionRouter = express();
   onionRouter.use(express.json());
   onionRouter.use(bodyParser.json());
+
+  // Register the node on the registry
+  await axios.post(`http://localhost:${REGISTRY_PORT}/registerNode`, {
+    nodeId,
+    pubKey: publicKey,
+  });
 
   // Implement the status route
   onionRouter.get("/status", (req, res) => {
